@@ -1,12 +1,20 @@
 import React from 'react'
 import Image from 'next/image'
+import {signIn,signOut,useSession} from 'next-auth/client'
 import {
     MenuIcon,
     SearchIcon,
     ShoppingBagIcon,
     ShoppingCartIcon
 } from "@heroicons/react/outline"
+import { useRouter } from 'next/dist/client/router'
+import { useSelector } from 'react-redux'
+import { selectItems } from '../slices/basketSlice'
 const Header = () => {
+    const [session] = useSession()
+    const router = useRouter()
+    const items = useSelector(selectItems)
+    
     return (
         <header>
             <div className = "flex items-center bg-amazon_blue p-1 flex-grow py-2">
@@ -16,6 +24,7 @@ const Header = () => {
                     height ={40} 
                     objectFit ="contain"
                     className ="cursor-pointer"
+                    onClick={() => router.push('/')}
                     />
                 </div>
                 {/*Search*/}
@@ -25,16 +34,18 @@ const Header = () => {
                 </div>
                 {/*Right*/}
                 <div className ="text-white flex items-center text-xs space-x-6 mx-6 white">
-                    <div className ="link">
-                        <p>Hello Darius Brown</p>
+                    <div onClick={!session ? signIn : signOut} className ="link">
+                        <p>{session ? `Hello ${session.user.name}`: 'Sign In'}</p>
                         <p className ="font-extrabold md:text-sm">Account and Lists</p>
                     </div>
                     <div className ="link">
                         <p>Returns</p>
                         <p className ="font-extrabold md:text-sm">& Orders</p>
                     </div>
-                    <div className ="link relative flex items-center ">
-                        <span className ="absolute rounded-full top-0 right-0 md:right-10 h-4 w-4 bg-yellow-400 text-center text-black font-bold">0</span>
+                    <div  onClick ={() => router.push('/checkout')}className ="link relative flex items-center ">
+                        <span className ="absolute rounded-full top-0 right-0 md:right-10 h-4 w-4 bg-yellow-400 text-center text-black font-bold">
+                            {items.length}
+                        </span>
                         <ShoppingCartIcon className="h-10"/>
                         <p className ="font-extrabold md:text-sm hidden md:inline mt-2">Basket</p>
                     </div>

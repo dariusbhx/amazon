@@ -8,8 +8,20 @@ export const basketSlice = createSlice({
   name: "basket",
   initialState,
   reducers: {
-    addToBasket: (state, action) => {},
-    removeFromBasket: (state, action) => {},
+    addToBasket: (state, action) => {
+      state.items = [...state.items, action.payload]
+    },
+    removeFromBasket: (state, action) => {
+      const index = state.items.findIndex(basketItem => basketItem.id === action.payload.id)
+      let newBasket =[...state.items]
+      if(index >= 0 ){
+        //remove item
+        newBasket.splice(index,1)
+      }else{
+        console.warn(`Cant remove item with ${action.payload.id}.`)
+      }
+      state.items = newBasket
+    },
   },
 });
 
@@ -19,3 +31,5 @@ export const { addToBasket, removeFromBasket } = basketSlice.actions;
 export const selectItems = (state) => state.basket.items;
 
 export default basketSlice.reducer;
+export const selectTotal = (state) => 
+state.basket.items.reduce((total,item) => total + item.price,0)
